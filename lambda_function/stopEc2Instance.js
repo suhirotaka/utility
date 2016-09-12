@@ -1,4 +1,4 @@
-const INSTANCE_TAG_NAME = 'deploy-test';
+const INSTANCE_TAG_NAME = '__YOUR_INSTANCE_NAME__';
 const INSTANCE_MIN_COUNT = 2;
  
 var AWS = require('aws-sdk'); 
