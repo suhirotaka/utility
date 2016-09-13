@@ -21,6 +21,8 @@ elif [[ "$1" = "-l" ]]; then
     echo $line_num: $line
     line_num=$(($line_num + 1))
   done
+elif [[ "$1" = "-m" ]]; then
+  vi $bm_filename
 elif [[ "$1" =~ ^[0-9]+$ ]]; then
   exec_command=`sed -n ${1}p $bm_filename`
 #echo $exec_command
