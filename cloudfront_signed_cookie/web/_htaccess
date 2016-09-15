@@ -1,0 +1,8 @@
+AuthUserFile /home/web/.htpasswd
+AuthGroupFile /dev/null
+AuthName "main"
+AuthType Basic
+require valid-user
+
+RewriteEngine on
+RewriteCond %{HTTPS} off

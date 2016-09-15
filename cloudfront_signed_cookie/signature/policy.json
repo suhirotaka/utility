@@ -1,0 +1,1 @@
+{"Statement":[{"Resource":"http*://test.example.com/*","Condition":{"DateLessThan":{"AWS:EpochTime":1501372800}}}]}

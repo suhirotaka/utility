@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript">
+      <!--
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+          results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
+
+      var query = document.location.search.substring(1);
+      var targetEnv = getParameterByName('env');
+      var cookieAttr = "domain=.example.com; path=/; expires=Thu, 1-Jan-2030 00:00:00 GMT; Secure=HttpOnly;";
+      switch (targetEnv) {
+        case "staging":
+          // signed cookie for staging
+          cfKeyPairId = "__YOUR_KEY_PAIR_ID_FOR_STAGING__";
+          cfPolicy = "__YOUR_POLICY_FOR_STAGING__";
+          cfSignature = "__YOUR_SIGNATURE_FOR_STAGING__";
+          siteUrl = "__YOUR_SITE_URL_FOR_STAGING__";
+          break;
+        case "dev":
+          // signed cookie for dev
+          cfKeyPairId = "__YOUR_KEY_PAIR_ID_FOR_DEV__";
+          cfPolicy = "__YOUR_POLICY_FOR_DEV__";
+          cfSignature = "__YOUR_SIGNATURE_FOR_DEV__";
+          siteUrl = "__YOUR_SITE_URL_FOR_DEV__";
+          break;
+      }
+      document.cookie = "CloudFront-Key-Pair-Id=" + cfKeyPairId + "; " + cookieAttr;
+      document.cookie = "CloudFront-Policy=" + cfPolicy + "; " + cookieAttr;
+      document.cookie = "CloudFront-Signature=" + cfSignature + "; " + cookieAttr;
+      location.href = siteUrl;
+      // -->
+    </script>
+  </head>
+  <body>
+    <p>Failed to save signature cookies.</p>
+  </body>
+</html>
