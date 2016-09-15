@@ -8,7 +8,7 @@ bm_filename=~/.command_bookmarks
 if [[ "$1" = "-a" ]]; then
   #last_command=`history | tail -n 2 | head -n 1 | sed -e 's/ \{1,\}[0-9]\{1,\} \{1,\}//'`
   if [ -n "$2" ]; then
-    echo "${@:2:($#-1)}" >> $bm_filename
+    echo "${@:2}" >> $bm_filename
     echo "Added a new command bookmark."
   else
     echo "No bookmark command specified."
