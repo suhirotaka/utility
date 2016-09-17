@@ -42,6 +42,22 @@ elif [[ "$1" = "run" ]]; then
   run_command=`sed -n ${2}p $bm_filename`
 #echo $run_command
   eval $run_command
+elif [[ "$1" = "--help" ]]; then
+  cat << EOS
+cmdb is a tool for command bookmarks
+
+Usage: cmdb <command> [<args>]
+
+Commands:
+   add      Add a command
+   ls       List commands
+   edit     Edit commands
+   rm       Delete a command
+   run      Run a command
+
+Options:
+  --help    Print this
+EOS
 else
   echo "Invalid command specified."
   exit 1
