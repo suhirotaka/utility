@@ -11,6 +11,7 @@ class MdfileLinkElasticsearch
     begin
       @index_name = "ruby-readme-#{SecureRandom.hex(8)}"
     end while @esc.indices.exists? index: @index_name
+    puts "Set index name to #{@index_name}"
 
     # Set destructor
     #ObjectSpace.define_finalizer(self, self.cleanup_index)
@@ -31,8 +32,15 @@ class MdfileLinkElasticsearch
       rescue => e
         puts "Error occured while opening URL: #{url}"
       end
-      @esc.create index: @index_name, type: 'article', body: { title: title, url: url, html_content: body }
-#break
+      esc_res = @esc.create index: @index_name, type: 'article', body: { title: title, url: url, html_content: body }
+      if esc_res['created']
+        puts "Record successfully created: #{url}"
+      else
+        puts "Failed to create record: #{url}"
+      end
+      # Sleep to buffer server load
+      sleep(5)
+break
     end
   end
   
@@ -42,15 +50,19 @@ class MdfileLinkElasticsearch
     #res = @esc.search index: @index_name, type: 'article', q: query
     res = @esc.search index: @index_name, type: 'article', body: { query: { match: { html_content: query } } }
     res['hits']['hits'].each do |article|
-      p "#{article['_source']['title']}(#{article['_source']['url']})"
+      puts "#{article['_source']['title']}(#{article['_source']['url']})"
     end
     cleanup_index
   end
   
   def cleanup_index
     # Cleanup the index
-    p "Cleanup Elasticsearch index: #{@index_name}"
-    @esc.indices.delete index: @index_name
+    esc_res = @esc.indices.delete index: @index_name
+    if esc_res['acknowledged']
+      puts "Index successfully removed: #{@index_name}"
+    else
+      puts "Failed to remove index: #{@index_name}"
+    end
   end
 end
 
