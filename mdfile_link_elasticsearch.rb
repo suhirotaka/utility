@@ -27,7 +27,9 @@ class MdfileLinkElasticsearch
       begin
         body = open(url, &:read).encode('UTF-8')
       rescue Encoding::UndefinedConversionError => e
-        p e
+        puts "UndefinedConversionError occured while opening URL: #{url}"
+      rescue => e
+        puts "Error occured while opening URL: #{url}"
       end
       @esc.create index: @index_name, type: 'article', body: { title: title, url: url, html_content: body }
 #break
@@ -54,5 +56,4 @@ end
 
 md_elastic = MdfileLinkElasticsearch.new
 md_elastic.get_articles
-sleep(10)
 md_elastic.send_query
