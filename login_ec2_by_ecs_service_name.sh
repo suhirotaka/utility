@@ -1,14 +1,52 @@
 #!/bin/bash
 
-PRIVATE_KEY_FILE=~/.ssh/ecs_development.pem
+DEFAULT_PRIVATE_KEY_FILE=~/.ssh/ecs_development.pem
 
-service_name=$1
+# Show command line help
+show_usage() {
+  echo "Usage: $0 [-f private_key_file] ecs_service_name"
+}
+
+# Get options
+while getopts f:h OPT
+do
+  case $OPT in
+    f)  PRIVATE_KEY_FILE=$OPTARG
+        ;;
+    h)  show_usage
+        exit 0
+        ;;
+    \?) show_usage
+        exit 1
+        ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+ECS_SERVICE_NAME=$1
+
+# Check environment
 if [ -z "$1" ]; then
   echo "Please input service name."
   exit 1
 fi
 
-task_definition=$(aws ecs describe-services --service $service_name | jq '.services[].taskDefinition')
+if ! type "jq" > /dev/null 2>&1; then
+  echo "Please install jq."
+  exit 1
+fi
+
+if [ -z "${PRIVATE_KEY_FILE+a}" ]; then
+  PRIVATE_KEY_FILE=$DEFAULT_PRIVATE_KEY_FILE
+fi
+
+if [ ! -e $PRIVATE_KEY_FILE ]; then
+  echo "Private key file not found."
+  exit 1
+fi
+
+# Get public IP from ecs service name
+task_definition=$(aws ecs describe-services --service $ECS_SERVICE_NAME | jq '.services[].taskDefinition')
 echo Set task definition to $task_definition
 
 task_arns=$(aws ecs list-tasks --cluster default | jq '.taskArns[]')
@@ -29,6 +67,6 @@ ec2_instance_id=$(aws ecs describe-container-instances --cluster default --conta
 
 public_ip=$(aws ec2 describe-instances --instance-ids $ec2_instance_id | jq .Reservations[].Instances[].PublicIpAddress | sed -e 's/"//g')
 
-# login with SSH
+# SSH to EC2 instance
 echo Successfully get public IP, SSH to $public_ip ...
 ssh -i $PRIVATE_KEY_FILE ec2-user@$public_ip
