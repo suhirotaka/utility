@@ -1,24 +1,41 @@
 #!/bin/bash
 
 DEFAULT_PRIVATE_KEY_FILE=~/.ssh/ecs_development.pem
+DEFAULT_CLUSTER_NAME=default
 
-# Show command line help
-show_usage() {
-  echo "Usage: $0 [-c] [-f private_key_file] ecs_service_name"
+# Show usage
+usage() {
+  cat <<__EOS__
+Usage:
+  $(basename $0) [-f private_key_file_name] [-c] [-d] ecs_service_name
+
+Options:
+  -f private key file name
+  -c ECS cluster name
+  -d directly login to container
+  -h print this
+__EOS__
 }
 
 # Get options
-while getopts f:ch OPT
+if [ $# -eq 0 ]; then
+  usage
+  exit 0
+fi
+
+while getopts f:cdh OPT
 do
   case $OPT in
     f)  PRIVATE_KEY_FILE=$OPTARG
         ;;
-    c)  CONTAINER_LOGIN=true
+    c)  CLUSTER_NAME=$OPTARG
         ;;
-    h)  show_usage
+    d)  CONTAINER_LOGIN=1
+        ;;
+    h)  usage
         exit 0
         ;;
-    \?) show_usage
+    \?) usage
         exit 1
         ;;
   esac
@@ -29,6 +46,10 @@ ECS_SERVICE_NAME=$1
 
 if [ -z "${PRIVATE_KEY_FILE+a}" ]; then
   PRIVATE_KEY_FILE=$DEFAULT_PRIVATE_KEY_FILE
+fi
+
+if [ -z "${CLUSTER_NAME+a}" ]; then
+  CLUSTER_NAME=$DEFAULT_CLUSTER_NAME
 fi
 
 # Check environment
@@ -53,9 +74,9 @@ echo Start to process login ...
 task_definition_arn=$(aws ecs describe-services --service $ECS_SERVICE_NAME | jq '.services[].taskDefinition')
 task_definition=$(echo $task_definition_arn | sed -e 's/"[^"\/]*\/\([^"\/]*\)"/\1/')
 
-task_arns=$(aws ecs list-tasks --cluster default | jq '.taskArns[]')
+task_arns=$(aws ecs list-tasks --cluster $CLUSTER_NAME | jq '.taskArns[]')
 task_ids=$(echo $task_arns | sed -e 's/"[^"\/]*\/\([^"\/]*\)"/\1/g')
-tasks_json=$(aws ecs describe-tasks --cluster default --tasks $task_ids | jq .tasks)
+tasks_json=$(aws ecs describe-tasks --cluster $CLUSTER_NAME --tasks $task_ids | jq .tasks)
 tasks_length=$(echo $tasks_json | jq length)
 for i in $( seq 0 $(($tasks_length - 1)) ); do
   task_json=$(echo $tasks_json | jq .[$i])
@@ -66,7 +87,7 @@ for i in $( seq 0 $(($tasks_length - 1)) ); do
 done
 
 container_instance_id=$(echo $container_instance_arn | sed -e 's/"[^"\/]*\/\([^"\/]*\)"/\1/g')
-ec2_instance_id=$(aws ecs describe-container-instances --cluster default --container-instances $container_instance_id | jq .containerInstances[].ec2InstanceId | sed -e 's/"//g')
+ec2_instance_id=$(aws ecs describe-container-instances --cluster $CLUSTER_NAME --container-instances $container_instance_id | jq .containerInstances[].ec2InstanceId | sed -e 's/"//g')
 
 public_ip=$(aws ec2 describe-instances --instance-ids $ec2_instance_id | jq .Reservations[].Instances[].PublicIpAddress | sed -e 's/"//g')
 
@@ -74,7 +95,7 @@ public_ip=$(aws ec2 describe-instances --instance-ids $ec2_instance_id | jq .Res
 container_type=$(echo $task_definition | sed -e 's/.*-\([^\-\:]*\):[0-9]*/\1/')
 container_name="ecs-$(echo $task_definition | sed -e 's/:/-/')-${container_type}"
 docker_command="docker exec -it \$(docker ps --filter name=${container_name} -q) bash"
-if [ -n "${CONTAINER_LOGIN+a}" -a $CONTAINER_LOGIN ]; then
+if [ -n "${CONTAINER_LOGIN+a}" -a $CONTAINER_LOGIN -eq 1 ]; then
   echo SSH to container $container_name@$public_ip ...
   ssh -t -i $PRIVATE_KEY_FILE ec2-user@$public_ip $docker_command
 else
