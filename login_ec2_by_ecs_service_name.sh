@@ -3,11 +3,11 @@
 DEFAULT_PRIVATE_KEY_FILE=~/.ssh/ecs_development.pem
 DEFAULT_CLUSTER_NAME=default
 
-# Show usage
+# show usage
 usage() {
   cat <<__EOS__
 Usage:
-  $(basename $0) [-f private_key_file_name] [-c] [-d] ecs_service_name
+  $(basename $0) [-f PRIVATE_KEY_FILE_NAME] [-c ECS_CLUSTER_NAME] [-d] ECS_SERVICE_NAME
 
 Options:
   -f private key file name
@@ -17,13 +17,13 @@ Options:
 __EOS__
 }
 
-# Get options
+# get options
 if [ $# -eq 0 ]; then
   usage
   exit 0
 fi
 
-while getopts f:cdh OPT
+while getopts f:c:dh OPT
 do
   case $OPT in
     f)  PRIVATE_KEY_FILE=$OPTARG
@@ -52,31 +52,54 @@ if [ -z "${CLUSTER_NAME+a}" ]; then
   CLUSTER_NAME=$DEFAULT_CLUSTER_NAME
 fi
 
-# Check environment
-if [ -z "$1" ]; then
-  echo "Please input service name."
-  exit 1
+# check environment
+raise_error=0
+
+if [ -z "$ECS_SERVICE_NAME" ]; then
+  echo "Error: ECS service name not found."
+  raise_error=1
 fi
 
 if ! type "jq" > /dev/null 2>&1; then
-  echo "Please install jq."
-  exit 1
+  echo "Error: jq command not found."
+  raise_error=1
+fi
+
+if ! type "aws" > /dev/null 2>&1; then
+  echo "Error: aws command not found."
+  raise_error=1
 fi
 
 if [ ! -e $PRIVATE_KEY_FILE ]; then
-  echo "Private key file not found."
+  echo "Error: private key file not found."
+  raise_error=1
+fi
+
+if [ $raise_error -eq 1 ]; then
   exit 1
 fi
 
-# Get public IP from ecs service name
+# get public IP from ECS service name
 echo Start to process login ...
 
 task_definition_arn=$(aws ecs describe-services --service $ECS_SERVICE_NAME | jq '.services[].taskDefinition')
+if [ -z "$task_definition_arn" ]; then
+  echo 'Error: task definition not found. (wrong service name?)'
+  exit 1
+fi
 task_definition=$(echo $task_definition_arn | sed -e 's/"[^"\/]*\/\([^"\/]*\)"/\1/')
 
 task_arns=$(aws ecs list-tasks --cluster $CLUSTER_NAME | jq '.taskArns[]')
+if [ -z "$task_arns" ]; then
+  echo 'Error: no ECS tasks found. (wrong cluster name?)'
+  exit 1
+fi
 task_ids=$(echo $task_arns | sed -e 's/"[^"\/]*\/\([^"\/]*\)"/\1/g')
 tasks_json=$(aws ecs describe-tasks --cluster $CLUSTER_NAME --tasks $task_ids | jq .tasks)
+if [ -z "$tasks_json" ]; then
+  echo 'Error: desired ECS tasks not found.'
+  exit 1
+fi
 tasks_length=$(echo $tasks_json | jq length)
 for i in $( seq 0 $(($tasks_length - 1)) ); do
   task_json=$(echo $tasks_json | jq .[$i])
@@ -88,14 +111,22 @@ done
 
 container_instance_id=$(echo $container_instance_arn | sed -e 's/"[^"\/]*\/\([^"\/]*\)"/\1/g')
 ec2_instance_id=$(aws ecs describe-container-instances --cluster $CLUSTER_NAME --container-instances $container_instance_id | jq .containerInstances[].ec2InstanceId | sed -e 's/"//g')
+if [ -z "$ec2_instance_id" ]; then
+  echo 'Error: desired container instance not found.'
+  exit 1
+fi
 
 public_ip=$(aws ec2 describe-instances --instance-ids $ec2_instance_id | jq .Reservations[].Instances[].PublicIpAddress | sed -e 's/"//g')
+if [ -z "$public_ip" ]; then
+  echo 'Error: desired EC2 instance not found.'
+  exit 1
+fi
 
 # SSH to EC2 instance
 container_type=$(echo $task_definition | sed -e 's/.*-\([^\-\:]*\):[0-9]*/\1/')
 container_name="ecs-$(echo $task_definition | sed -e 's/:/-/')-${container_type}"
 docker_command="docker exec -it \$(docker ps --filter name=${container_name} -q) bash"
-if [ -n "${CONTAINER_LOGIN+a}" -a $CONTAINER_LOGIN -eq 1 ]; then
+if [ -n "${CONTAINER_LOGIN+a}" ] && [ $CONTAINER_LOGIN -eq 1 ]; then
   echo SSH to container $container_name@$public_ip ...
   ssh -t -i $PRIVATE_KEY_FILE ec2-user@$public_ip $docker_command
 else
