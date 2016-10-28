@@ -125,7 +125,7 @@ fi
 # SSH to EC2 instance
 container_type=$(echo $task_definition | sed -e 's/.*-\([^\-\:]*\):[0-9]*/\1/')
 container_name="ecs-$(echo $task_definition | sed -e 's/:/-/')-${container_type}"
-docker_command="docker exec -it \$(docker ps --filter name=${container_name} -q) bash"
+docker_command="docker exec -it \$(docker ps --filter name=${container_name} -q | head -1) bash"
 if [ -n "${CONTAINER_LOGIN+a}" ] && [ $CONTAINER_LOGIN -eq 1 ]; then
   echo SSH to container $container_name@$public_ip ...
   ssh -t -i $PRIVATE_KEY_FILE ec2-user@$public_ip $docker_command
