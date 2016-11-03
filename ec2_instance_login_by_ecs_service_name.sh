@@ -75,6 +75,21 @@ if [ ! -e $PRIVATE_KEY_FILE ]; then
   raise_error=1
 fi
 
+if [ -z "$(aws configure get aws_access_key_id)" ]; then
+  echo 'Error: aws access key id not found. try `env AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID`'
+  raise_error=1
+fi
+
+if [ -z "$(aws configure get aws_secret_access_key)" ]; then
+  echo 'Error: aws secret access key not found. try `env AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY`'
+  raise_error=1
+fi
+
+if [ -z "$(aws configure get region)" ]; then
+  echo 'Error: aws region not found. try `env AWS_DEFAULT_REGION=YOUR_AWS_REGION`'
+  raise_error=1
+fi
+
 if [ $raise_error -eq 1 ]; then
   exit 1
 fi
@@ -82,20 +97,20 @@ fi
 # get public IP from ECS service name
 echo Start to process login ...
 
-task_definition_arn=$(aws ecs describe-services --service $ECS_SERVICE_NAME | jq '.services[].taskDefinition')
+task_definition_arn=$(aws ecs describe-services --output json --service $ECS_SERVICE_NAME | jq '.services[].taskDefinition')
 if [ -z "$task_definition_arn" ]; then
   echo 'Error: task definition not found. (wrong service name?)'
   exit 1
 fi
 task_definition=$(echo $task_definition_arn | sed -e 's/"[^"\/]*\/\([^"\/]*\)"/\1/')
 
-task_arns=$(aws ecs list-tasks --cluster $CLUSTER_NAME | jq '.taskArns[]')
+task_arns=$(aws ecs list-tasks --output json --cluster $CLUSTER_NAME | jq '.taskArns[]')
 if [ -z "$task_arns" ]; then
   echo 'Error: no ECS tasks found. (wrong cluster name?)'
   exit 1
 fi
 task_ids=$(echo $task_arns | sed -e 's/"[^"\/]*\/\([^"\/]*\)"/\1/g')
-tasks_json=$(aws ecs describe-tasks --cluster $CLUSTER_NAME --tasks $task_ids | jq .tasks)
+tasks_json=$(aws ecs describe-tasks --output json --cluster $CLUSTER_NAME --tasks $task_ids | jq .tasks)
 if [ -z "$tasks_json" ]; then
   echo 'Error: desired ECS tasks not found.'
   exit 1
@@ -110,13 +125,13 @@ for i in $( seq 0 $(($tasks_length - 1)) ); do
 done
 
 container_instance_id=$(echo $container_instance_arn | sed -e 's/"[^"\/]*\/\([^"\/]*\)"/\1/g')
-ec2_instance_id=$(aws ecs describe-container-instances --cluster $CLUSTER_NAME --container-instances $container_instance_id | jq .containerInstances[].ec2InstanceId | sed -e 's/"//g')
+ec2_instance_id=$(aws ecs describe-container-instances --output json --cluster $CLUSTER_NAME --container-instances $container_instance_id | jq .containerInstances[].ec2InstanceId | sed -e 's/"//g')
 if [ -z "$ec2_instance_id" ]; then
   echo 'Error: desired container instance not found.'
   exit 1
 fi
 
-public_ip=$(aws ec2 describe-instances --instance-ids $ec2_instance_id | jq .Reservations[].Instances[].PublicIpAddress | sed -e 's/"//g')
+public_ip=$(aws ec2 describe-instances --output json --instance-ids $ec2_instance_id | jq .Reservations[].Instances[].PublicIpAddress | sed -e 's/"//g')
 if [ -z "$public_ip" ]; then
   echo 'Error: desired EC2 instance not found.'
   exit 1
