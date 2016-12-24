@@ -2,6 +2,7 @@
 
 DEFAULT_PRIVATE_KEY_FILE=~/.ssh/ecs_development.pem
 DEFAULT_CLUSTER_NAME=default
+VERSION_CODE=1.0.0
 
 # show usage
 usage() {
@@ -15,6 +16,8 @@ Options:
   -c ECS cluster name
   -d directly login to ECS container
   -h print this
+
+$(basename $0) version $VERSION_CODE
 __EOS__
 }
 
