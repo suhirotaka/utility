@@ -6,7 +6,7 @@ DEFAULT_CLUSTER_NAME=default
 # show usage
 usage() {
   cat <<__EOS__
-Login to ECS instance or ECS container by ECS service name
+Login to ECS instance or container by ECS service name
 Usage:
   $(basename $0) [-f PRIVATE_KEY_FILE_NAME] [-c ECS_CLUSTER_NAME] [-d] ECS_SERVICE_NAME
 
