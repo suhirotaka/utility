@@ -1,4 +1,4 @@
-# shell-scripts
+# util
 
 ## Installation
 `brew tap suhirotaka/shell-scripts`
