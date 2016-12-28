@@ -1,64 +1,78 @@
 #!/bin/bash
 
-#hist_filename=~/.bash_history
-bm_filename=~/.command_bookmarks
-#HISTFILE=$hist_filename
-#set -o history
+BM_FILENAME=~/.command_bookmarks
+VERSION_CODE=1.0.0
 
+# "Add" option
 if [[ "$1" = "add" ]]; then
-  # "Add" option
-  #last_command=`history | tail -n 2 | head -n 1 | sed -e 's/ \{1,\}[0-9]\{1,\} \{1,\}//'`
   if [ -n "$2" ]; then
-    echo "${@:2}" >> $bm_filename
+    echo "${@:2}" >> $BM_FILENAME
     echo "Added a new command bookmark."
   else
-    echo "No bookmark command specified."
+    echo "Please specify a command to be added."
     exit 1
   fi
+
+# "List" option
 elif [[ "$1" = "ls" ]]; then
-  # "List" option
   line_num=1
-  cat $bm_filename | while read line
+  cat $BM_FILENAME | while read line
   do
     echo $line_num: $line
     line_num=$(($line_num + 1))
   done
+
+# "Edit" option
 elif [[ "$1" = "edit" ]]; then
-  # "Modify" option
-  vi $bm_filename
+  "${EDITOR:-vi}" $BM_FILENAME
+
+# "Remove" option
 elif [[ "$1" = "rm" ]]; then
-  # "Delete" option
   if [[ ! "$2" =~ ^[0-9]+$ ]]; then
     echo "Invalid command number specified."
     exit 1
   fi
-  sed -i -e "${2},${2}d" ~/.command_bookmarks
+  sed -i -e "${2},${2}d" $BM_FILENAME
+
+# "Run" option
 elif [[ "$1" = "run" ]]; then
   if [[ ! "$2" =~ ^[0-9]+$ ]]; then
     echo "Invalid command number specified."
     exit 1
   fi
-  # "Run specified command" option
-  run_command=`sed -n ${2}p $bm_filename`
-#echo $run_command
+  run_command=`sed -n ${2}p $BM_FILENAME`
+  if [[ -z "$run_command" ]]; then
+    echo "Command not found."
+    exit 1
+  fi
+  echo "$(basename $0): Running \`$run_command\`"
   eval $run_command
+
+# "--help" option
 elif [[ "$1" = "--help" ]]; then
-  cat << EOS
-cmdb is a tool for command bookmarks
+  cat <<__EOS__
+$(basename $0) is a tool for command bookmarks
 
-Usage: cmdb <command> [<args>]
+Usage: $(basename $0) <action> [<options>]
 
-Commands:
-   add      Add a command
-   ls       List commands
-   edit     Edit commands
-   rm       Delete a command
-   run      Run a command
+Actions:
+   add       Add a bookmark
+   ls        List bookmarks
+   edit      Edit bookmarks
+   rm        Delete a bookmark
+   run       Run a bookmarked command
 
 Options:
-  --help    Print this
-EOS
+  --help     Print this
+  --version  Show version
+__EOS__
+
+# "--version" option
+elif [[ "$1" = "--version" ]]; then
+  echo "$(basename $0) version $VERSION_CODE"
+
+# other actions
 else
-  echo "Invalid command specified."
+  echo "Unknown action specified."
   exit 1
 fi
