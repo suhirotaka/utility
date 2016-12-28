@@ -1,8 +1,9 @@
-const INSTANCE_TAG_NAME = '__YOUR_INSTANCE_NAME__';
+const INSTANCE_TAG_NAME = '__YOUR_INSTANCE_TAGGED_NAME__';
+const AWS_REGION = 'ap-northeast-1';
 const INSTANCE_MIN_COUNT = 2;
  
 var AWS = require('aws-sdk'); 
-AWS.config.region = 'ap-northeast-1';
+AWS.config.region = AWS_REGION;
  
 var stopEc2Instance = {
   targetInstanceId: '',
@@ -53,7 +54,7 @@ var stopEc2Instance = {
 //console.log('Instance count is under minimum');
         stopEc2Instance.callback('Instance count is under minimum');
       }else {
-        console.log('Will stop the EC2 instance whose id is ' + targetInstanceId);
+        console.log('Stopped the EC2 instance whose id is ' + targetInstanceId);
         stopEc2Instance.targetInstanceId = targetInstanceId;
         stopEc2Instance.stop();
       }
