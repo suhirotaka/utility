@@ -1,9 +1,13 @@
 require 'elasticsearch'
 require 'open-uri'
 require 'securerandom'
+require 'optparse'
+
+Version = "1.0.0"
 
 class MdfileLinkElasticsearch
-  def initialize
+  def initialize(query)
+    @query = query
     @esc = Elasticsearch::Client.new
     
     # Set Elasticsearch index name
@@ -11,7 +15,7 @@ class MdfileLinkElasticsearch
     begin
       @index_name = "ruby-readme-#{SecureRandom.hex(8)}"
     end while @esc.indices.exists? index: @index_name
-    puts "Set index name to #{@index_name}"
+#    puts "Set index name to #{@index_name}"
 
     # Set destructor
     #ObjectSpace.define_finalizer(self, self.cleanup_index)
@@ -19,7 +23,7 @@ class MdfileLinkElasticsearch
   
   def get_articles
     # Get articles from md file
-    filename = './readme_test.dat'
+    filename = './example.md'
     data = File.read(filename)
     matches = data.scan(/\[(.+?)\].*?\((.+?)\)/)
     matches.each do |match|
@@ -34,21 +38,19 @@ class MdfileLinkElasticsearch
       end
       esc_res = @esc.create index: @index_name, type: 'article', body: { title: title, url: url, html_content: body }
       if esc_res['created']
-        puts "Record successfully created: #{url}"
+#        puts "Record successfully created: #{url}"
       else
         puts "Failed to create record: #{url}"
       end
       # Sleep to buffer server load
       sleep(5)
-break
+#break
     end
   end
   
   def send_query
     # Query to Elasticsearch
-    query = ARGV[0]
-    #res = @esc.search index: @index_name, type: 'article', q: query
-    res = @esc.search index: @index_name, type: 'article', body: { query: { match: { html_content: query } } }
+    res = @esc.search index: @index_name, type: 'article', body: { query: { match: { html_content: @query } } }
     res['hits']['hits'].each do |article|
       puts "#{article['_source']['title']}(#{article['_source']['url']})"
     end
@@ -59,13 +61,29 @@ break
     # Cleanup the index
     esc_res = @esc.indices.delete index: @index_name
     if esc_res['acknowledged']
-      puts "Index successfully removed: #{@index_name}"
+#      puts "Index successfully removed: #{@index_name}"
     else
       puts "Failed to remove index: #{@index_name}"
     end
   end
 end
 
-md_elastic = MdfileLinkElasticsearch.new
+help_message = <<EOS
+Run Elasticsearch on linked URLs in a markdown format file
+Usage: ruby #{File.basename($0)} query
+
+Options:
+  --help, -h    print this
+EOS
+
+op = OptionParser.new(help_message)
+option = op.parse!(ARGV)
+query = ARGV.join(' ')
+if !query || query.empty?
+  puts "Please input query."
+  exit
+end
+
+md_elastic = MdfileLinkElasticsearch.new(query)
 md_elastic.get_articles
 md_elastic.send_query
