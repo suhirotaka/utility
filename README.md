@@ -55,7 +55,7 @@ brew install cmdbm
 
 ### Usage
 ```
-Usage: cmdb [<action>] [<options>]
+Usage: cmdbm [<action>] [<options>]
 
 Actions:
    add       Add a bookmark
