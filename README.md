@@ -7,9 +7,7 @@ Collects my utility scripts for daily use
 - [cloudfront_signed_cookie](#item4)
 - [ruby/mdfile_link_elasticsearch](#item5)
 
-<br />
 ***
-<br />
 
 ## <a name="item1"></a>shell/ecs_login_by_service_name.sh
 ecs_login_by_service_name.sh logins you to ECS instance or container by ECS service name.
