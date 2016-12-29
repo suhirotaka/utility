@@ -13,6 +13,12 @@ my utility scripts collection for daily use
 ## <a name="item1"></a>shell/ecs_login_by_service_name.sh
 ecs_login_by_service_name.sh logins you to ECS instance or container by ECS service name.
 
+### Installation
+```
+brew tap suhirotaka/utility
+brew install ecslogin
+```
+
 ### Usage
 ```
 Usage:
@@ -29,12 +35,6 @@ Options:
 - [jq](https://stedolan.github.io/jq/ "jq")
 - [AWS CLI](https://aws.amazon.com/cli/ "AWS CLI")
 
-### Installation
-```
-brew tap suhirotaka/shell-scripts
-brew install ecslogin
-```
-
 ### Motivation
 It is not an easy thing to login to ECS container of a desired ECS service name, because we need complicated steps to look up which EC2 instance is running specific ECS container. I was so frustrated that I wrote this script.
 
@@ -46,6 +46,12 @@ It is not an easy thing to login to ECS container of a desired ECS service name,
 command_bookmarks.sh adds command bookmark functionality to your console.
 
 Bookmarks are saved at ~/.commandBookmarks.
+
+### Installation
+```
+brew tap suhirotaka/utility
+brew install cmdbm
+```
 
 ### Usage
 ```
