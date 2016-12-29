@@ -1,5 +1,5 @@
 # utility
-Collects my utility scripts for daily use
+my utility scripts collection for daily use
 
 - [shell/ecs_login_by_service_name.sh](#item1)
 - [shell/command_bookmarks.sh](#item2)
