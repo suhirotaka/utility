@@ -52,7 +52,7 @@ It is helpful to bookmark frequently repeated but difficult-to-type commands.
 <br />
 For example, you can bookmark `docker stop $(docker ps --filter name=test* -q)` as following.
 ```
-cmdbm add docker stop $(docker ps --filter name=test* -q)
+cmdbm add 'docker stop $(docker ps --filter name=test* -q)'
 cmdbm ls
 > 3: docker stop $(docker ps --filter name=test* -q)
 cmdbm run 3
