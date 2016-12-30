@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DEFAULT_PRIVATE_KEY_FILE=~/.ssh/ecs_development.pem
-DEFAULT_CLUSTER_NAME=default
+DEFAULT_PRIVATE_KEY_FILE=~/.ssh/ecslogin.pem
+#DEFAULT_CLUSTER_NAME=default
 VERSION_CODE=1.0.0
 
 # show usage
@@ -9,7 +9,7 @@ usage() {
   cat <<__EOS__
 Login to ECS instance or container by ECS service name
 Usage:
-  $(basename $0) [-f PRIVATE_KEY_FILE_NAME] [-c ECS_CLUSTER_NAME] [-d] ECS_SERVICE_NAME
+  $(basename $0) [-f PRIVATE_KEY_FILE_NAME] <-c ECS_CLUSTER_NAME> [-d] <ECS_SERVICE_NAME>
 
 Options:
   -f private key file name
@@ -52,12 +52,17 @@ if [ -z "${PRIVATE_KEY_FILE+a}" ]; then
   PRIVATE_KEY_FILE=$DEFAULT_PRIVATE_KEY_FILE
 fi
 
-if [ -z "${CLUSTER_NAME+a}" ]; then
-  CLUSTER_NAME=$DEFAULT_CLUSTER_NAME
-fi
+#if [ -z "${CLUSTER_NAME+a}" ]; then
+#  CLUSTER_NAME=$DEFAULT_CLUSTER_NAME
+#fi
 
 # check environment
 raise_error=0
+
+if [ -z "${CLUSTER_NAME+a}" ]; then
+  echo "Error: ECS cluster name not found."
+  raise_error=1
+fi
 
 if [ -z "$ECS_SERVICE_NAME" ]; then
   echo "Error: ECS service name not found."

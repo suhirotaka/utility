@@ -22,7 +22,7 @@ brew install ecslogin
 ### Usage
 ```
 Usage:
-  ecslogin [-f PRIVATE_KEY_FILE_NAME] [-c ECS_CLUSTER_NAME] [-d] ECS_SERVICE_NAME
+  ecslogin [-f PRIVATE_KEY_FILE_NAME] <-c ECS_CLUSTER_NAME> [-d] <ECS_SERVICE_NAME>
 
 Options:
   -f private key file name
