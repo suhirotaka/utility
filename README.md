@@ -47,6 +47,17 @@ command_bookmarks.sh adds command bookmark functionality to your console.
 
 Bookmarks are saved at ~/.commandBookmarks.
 
+### Demo
+It is helpful to bookmark frequently repeated but difficult-to-type commands. 
+<br />
+For example, you can bookmark `docker stop $(docker ps --filter name=test* -q)` as following.
+```
+cmdbm add docker stop $(docker ps --filter name=test* -q)
+cmdbm ls
+> 3: docker stop $(docker ps --filter name=test* -q)
+cmdbm run 3
+```
+
 ### Installation
 ```
 brew tap suhirotaka/utility
