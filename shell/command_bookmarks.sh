@@ -1,10 +1,30 @@
 #!/bin/bash
 
 BM_FILENAME=~/.command_bookmarks
-VERSION_CODE=1.0.0
+VERSION_CODE=1.0.1
 
-# "Add" option
+# show usage
+usage() {
+  cat <<__EOS__
+$(basename $0) is a tool for command bookmarks
+
+Usage: $(basename $0) [<action>] [<options>]
+
+Actions:
+  add <command>     Add command to bookmark
+  ls                List bookmarks with their IDs
+  edit              Edit bookmarks
+  rm <ID>           Delete a bookmark of the specified ID looked up by "ls" action
+  run <ID>          Run a command of the specified ID looked up by "ls" action
+
+Options:
+  --help     Print this
+  --version  Show version
+__EOS__
+}
+
 case "$1" in
+  # "Add" option
   "add" )
     if [ -n "$2" ]; then
       echo "${@:2}" >> $BM_FILENAME
@@ -15,7 +35,7 @@ case "$1" in
     fi
     ;;
 
-# "List" option
+  # "List" option
   "ls" )
     line_num=1
     cat $BM_FILENAME | while read line
@@ -25,12 +45,12 @@ case "$1" in
     done
     ;;
 
-# "Edit" option
+  # "Edit" option
   "edit" )
     "${EDITOR:-vi}" $BM_FILENAME
     ;;
 
-# "Remove" option
+  # "Remove" option
   "rm" )
     if [[ ! "$2" =~ ^[0-9]+$ ]]; then
       echo "Invalid command number specified."
@@ -39,7 +59,7 @@ case "$1" in
     sed -i -e "${2},${2}d" $BM_FILENAME
     ;;
 
-# "Run" option
+  # "Run" option
   "run" )
     if [[ ! "$2" =~ ^[0-9]+$ ]]; then
       echo "Invalid command number specified."
@@ -54,34 +74,19 @@ case "$1" in
     eval $run_command
     ;;
 
-# "--help" option
-  "--help" )
-    cat <<__EOS__
-$(basename $0) is a tool for command bookmarks
-
-Usage: $(basename $0) <action> [<options>]
-
-Actions:
-   add       Add a bookmark
-   ls        List bookmarks
-   edit      Edit bookmarks
-   rm        Delete a bookmark
-   run       Run a bookmarked command
-
-Options:
-  --help     Print this
-  --version  Show version
-__EOS__
+  # "--help" option
+  "--help" | "" )
+    usage
     ;;
 
-# "--version" option
+  # "--version" option
   "--version" )
     echo "$(basename $0) version $VERSION_CODE"
     ;;
 
-# other actions
+  # other actions
   * )
-    echo "Unknown action specified."
+    echo "Unknown action. Try $(basename $0) --help"
     exit 1
     ;;
 esac

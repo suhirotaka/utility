@@ -58,11 +58,11 @@ brew install cmdbm
 Usage: cmdbm [<action>] [<options>]
 
 Actions:
-   add       Add a bookmark
-   ls        List bookmarks
-   edit      Edit bookmarks
-   rm        Delete a bookmark
-   run       Run a bookmarked command
+  add <command>     Add command to bookmark
+  ls                List bookmarks with their IDs
+  edit              Edit bookmarks
+  rm <ID>           Delete a bookmark of the specified ID looked up by "ls" action
+  run <ID>          Run a command of the specified ID looked up by "ls" action
 
 Options:
   --help     Print this
