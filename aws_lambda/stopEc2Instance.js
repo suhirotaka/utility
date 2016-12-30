@@ -1,6 +1,6 @@
-const INSTANCE_TAG_NAME = '__YOUR_INSTANCE_TAGGED_NAME__';
-const AWS_REGION = 'ap-northeast-1';
-const INSTANCE_MIN_COUNT = 2;
+const INSTANCE_TAG_NAME = '__YOUR_INSTANCE_TAG_NAME__'; // Set instance's tag name which you want to stop
+const AWS_REGION = 'ap-northeast-1'; // Set your aws region
+const INSTANCE_MIN_COUNT = 0; // Do not stop instance if count of instances of the desired tag name becomes below this value
  
 var AWS = require('aws-sdk'); 
 AWS.config.region = AWS_REGION;
