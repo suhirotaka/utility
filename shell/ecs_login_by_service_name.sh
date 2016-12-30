@@ -2,18 +2,18 @@
 
 DEFAULT_PRIVATE_KEY_FILE=~/.ssh/ecslogin.pem
 #DEFAULT_CLUSTER_NAME=default
-VERSION_CODE=1.0.1
+VERSION_CODE=1.0.2
 
 # show usage
 usage() {
   cat <<__EOS__
 Login to ECS instance or container by ECS service name
 Usage:
-  $(basename $0) [-f PRIVATE_KEY_FILE_NAME] <-c ECS_CLUSTER_NAME> [-d] <ECS_SERVICE_NAME>
+  $(basename $0) <-c ECS_CLUSTER_NAME> [-f PRIVATE_KEY_FILE_NAME] [-d] <ECS_SERVICE_NAME>
 
 Options:
-  -f private key file name
   -c ECS cluster name
+  -f private key file name (~/.ssh/ecslogin.pem is used by default.)
   -d directly login to ECS container
   -h print this
 

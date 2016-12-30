@@ -22,11 +22,11 @@ brew install ecslogin
 ### Usage
 ```
 Usage:
-  ecslogin [-f PRIVATE_KEY_FILE_NAME] <-c ECS_CLUSTER_NAME> [-d] <ECS_SERVICE_NAME>
+  ecslogin <-c ECS_CLUSTER_NAME> [-f PRIVATE_KEY_FILE_NAME] [-d] <ECS_SERVICE_NAME>
 
 Options:
-  -f private key file name
   -c ECS cluster name
+  -f private key file name (~/.ssh/ecslogin.pem is used by default.)
   -d directly login to ECS container
   -h print this
 ```
