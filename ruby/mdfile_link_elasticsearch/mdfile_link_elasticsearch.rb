@@ -4,6 +4,7 @@ require 'securerandom'
 require 'optparse'
 
 Version = "1.0.0"
+MD_FILENAME = './source.md'
 
 class MdfileLinkElasticsearch
   def initialize(query)
@@ -23,8 +24,7 @@ class MdfileLinkElasticsearch
   
   def get_articles
     # Get articles from md file
-    filename = './example.md'
-    data = File.read(filename)
+    data = File.read(MD_FILENAME)
     matches = data.scan(/\[(.+?)\].*?\((.+?)\)/)
     matches.each do |match|
       title = match.first
@@ -70,7 +70,7 @@ end
 
 help_message = <<EOS
 Run Elasticsearch on linked URLs in a markdown format file
-Usage: ruby #{File.basename($0)} query
+Usage: ruby #{File.basename($0)} <query>
 
 Options:
   --help, -h    print this
@@ -83,6 +83,7 @@ if !query || query.empty?
   puts "Please input query."
   exit
 end
+puts "Started process, it will take a minute..."
 
 md_elastic = MdfileLinkElasticsearch.new(query)
 md_elastic.get_articles

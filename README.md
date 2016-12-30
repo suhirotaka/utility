@@ -119,9 +119,9 @@ mdfile_link_elasticsearch.rb runs Elasticsearch on linked URLs in a markdown for
 
 ### Usage
 1. Run `bunlde install`
-2. Create markdown format file on which Elasticsearch is run
+2. Create a markdown file as source.md on which Elasticsearch is run
 3. Set created file name to MD_FILENAME in mdfile_link_elasticsearch.rb 
-4. Run `ruby mdfile_link_elasticsearch.rb query`
+4. Run `ruby mdfile_link_elasticsearch.rb <query>`
 
 ### System dependencies
 - ruby
