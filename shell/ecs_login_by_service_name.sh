@@ -2,7 +2,7 @@
 
 DEFAULT_PRIVATE_KEY_FILE=~/.ssh/ecslogin.pem
 #DEFAULT_CLUSTER_NAME=default
-VERSION_CODE=1.0.0
+VERSION_CODE=1.0.1
 
 # show usage
 usage() {
