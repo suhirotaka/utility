@@ -80,11 +80,12 @@ stopEc2Instance.js is node script which stops EC2 instance of a desired tag name
 You can refresh EC2 instances by following steps.
 
 1. Configure constants
-```
-const INSTANCE_TAG_NAME = '__YOUR_INSTANCE_TAG_NAME__'; // Set instance's tag name which you want to stop
-const AWS_REGION = 'ap-northeast-1'; // Set your aws region
-const INSTANCE_MIN_COUNT = 0; // Do not stop instance if count of instances of the desired tag name becomes below this value
-```
+
+   ```
+   const INSTANCE_TAG_NAME = '__YOUR_INSTANCE_TAG_NAME__'; // Set instance's tag name which you want to stop
+   const AWS_REGION = 'ap-northeast-1'; // Set your aws region
+   const INSTANCE_MIN_COUNT = 0; // Do not stop instance if count of instances of the desired tag name becomes below this value
+   ```
 2. Set to run stopEc2Instance.js on AWS Lambda
 3. Set instance's auto scaling more than 1
 
