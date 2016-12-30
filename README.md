@@ -13,6 +13,13 @@ my utility scripts collection for daily use
 ## <a name="item1"></a>shell/ecs_login_by_service_name.sh
 ecs_login_by_service_name.sh logins you to ECS instance or container by ECS service name.
 
+### Demo
+Logging in to ECS server gets as easy as below.
+```
+ecslogin -c ecs_cluster_name ecs_service_name # login to instance
+ecslogin -d -c ecs_cluster_name ecs_service_name # login to container
+```
+
 ### Installation
 ```
 brew tap suhirotaka/utility
