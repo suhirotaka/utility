@@ -3,6 +3,7 @@ my utility scripts collection for daily use
 
 - [shell/ecs_login_by_service_name.sh](#item1)
 - [shell/command_bookmarks.sh](#item2)
+- [shell/open_github_web.sh](#item6)
 - [aws_lambda/stopEc2Instance.js](#item3)
 - [cloudfront_signed_cookie](#item4)
 - [ruby/mdfile_link_elasticsearch](#item5)
@@ -81,6 +82,28 @@ Actions:
   edit              Edit bookmarks
   rm <ID>           Delete a bookmark of the specified ID looked up by "ls" action
   run <ID>          Run a command of the specified ID looked up by "ls" action
+
+Options:
+  --help     Print this
+  --version  Show version
+```
+
+<br />
+***
+<br />
+
+## <a name="item6"></a>shell/open_github_web.sh
+open_github_web.sh opens github web page from local repository
+
+### Installation
+```
+brew tap suhirotaka/utility
+brew install ghweb
+```
+
+### Usage
+```
+Usage: ghweb <REMOTE_NAME>
 
 Options:
   --help     Print this
