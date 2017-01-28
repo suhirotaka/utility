@@ -93,17 +93,25 @@ Options:
 <br />
 
 ## <a name="item6"></a>shell/open_github_web.sh
-open_github_web.sh opens github web page from local repository
+open_github_web.sh opens github web page from local repository.
 
+### Demo
+Do you want to see GitHub web when working with console?  
+You can open repository's web page by `open_github_web.sh origin`
+
+<!--
 ### Installation
 ```
 brew tap suhirotaka/utility
 brew install ghweb
 ```
+-->
 
 ### Usage
 ```
-Usage: ghweb <REMOTE_NAME>
+Usage: open_github_web.sh [<REMOTE_NAME>]
+
+If no REMOTE_NAME is given, "origin" will be used.
 
 Options:
   --help     Print this
