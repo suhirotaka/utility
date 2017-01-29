@@ -4,6 +4,7 @@ my utility scripts collection for daily use
 - [shell/ecs_login_by_service_name.sh](#item1)
 - [shell/command_bookmarks.sh](#item2)
 - [shell/open_github_web.sh](#item6)
+- [shell/upload_node_lambda_function.sh](#item7)
 - [aws_lambda/stopEc2Instance.js](#item3)
 - [cloudfront_signed_cookie](#item4)
 - [ruby/mdfile_link_elasticsearch](#item5)
@@ -112,6 +113,22 @@ brew install ghweb
 Usage: open_github_web.sh [<REMOTE_NAME>]
 
 If no REMOTE_NAME is given, "origin" will be used.
+
+Options:
+  --help     Print this
+  --version  Show version
+```
+
+<br />
+***
+<br />
+
+## <a name="item7"></a>shell/upload_node_lambda_function.sh
+upload_node_lambda_function.sh builds and uploads AWS lambda function written by Node.js.
+
+### Usage
+```
+Usage: upload_node_lambda_function.sh <SOURCE_DIRECTORY> <FUNCTION_NAME>
 
 Options:
   --help     Print this
