@@ -135,6 +135,9 @@ Options:
   --version  Show version
 ```
 
+### System dependencies
+- [AWS CLI](https://aws.amazon.com/cli/ "AWS CLI")
+
 <br />
 ***
 <br />
