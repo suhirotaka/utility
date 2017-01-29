@@ -5,8 +5,9 @@ VERSION_CODE=1.0.0
 # show usage
 usage() {
   cat <<__EOS__
-Usage: $(basename $0) <SOURCE_DIRECTORY> <FUNCTION_NAME>
+$(basename $0) builds and uploads AWS lambda function written by Node.js.
 
+Usage: $(basename $0) <SOURCE_DIRECTORY> <FUNCTION_NAME>
 
 Options:
   --help     Print this
