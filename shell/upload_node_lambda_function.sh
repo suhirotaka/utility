@@ -21,7 +21,7 @@ if [ -n "$3" ]; then
 fi
 
 case "$1" in
-  -h | --help )
+  -h | --help | '')
     usage
     exit 0
     ;;
