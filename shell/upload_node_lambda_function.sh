@@ -57,3 +57,4 @@ cd $source_dir
 npm install
 zip -r $zipped_file *.js node_modules
 aws lambda update-function-code --function-name $function_name --zip-file fileb://$(pwd)/$zipped_file
+echo "Lambda function upload successful"
