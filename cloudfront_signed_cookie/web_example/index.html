@@ -15,7 +15,11 @@
 
       var query = document.location.search.substring(1);
       var targetEnv = getParameterByName('env');
-      var cookieAttr = "domain=.example.com; path=/; expires=Thu, 1-Jan-2030 00:00:00 GMT; Secure=HttpOnly;";
+      var cookieAttr = "domain=.example.com; path=/; expires=Thu, 1-Jan-2030 00:00:00 GMT;";
+      var cfKeyPairId;
+      var cfPolicy;
+      var cfSignature;
+      var siteUrl;
       switch (targetEnv) {
         case "staging":
           // signed cookie for staging
