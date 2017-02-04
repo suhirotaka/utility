@@ -173,9 +173,11 @@ I found it may cause problems to keep EC2 instance running for a long time becau
 cloudfront_signed_cookie contains scripts to use CloudFront's signed cookie.
 
 ### Usage
-1. Edit signature/policy.json to set domain name, expiration time, etc.
-2. Get base64 encoded policy and signature by running signature/get_policy.sh and signature/get_signature.sh
-3. Set generated policy and signature to viewer's web browsers. The html in web_example demonstorates how you can do that.
+1. Create CloudFront key pair. For detail, see http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html#private-content-creating-cloudfront-key-pairs
+2. Copy CloudFront private key you got in the previous step as ./private_pk.pem
+3. Edit signature/policy.json to set domain name, expiration time, etc.
+4. Get base64 encoded policy and signature by running signature/get_policy.sh and signature/get_signature.sh
+5. Set generated policy and signature and key pair ID you got in the first step to viewer's web browsers. The html in web_example demonstorates how you can do that.
 
 [I wrote an article for detail.](http://qiita.com/suhirotaka/items/514a9e246779dc1b9489 "AWS CloudFront 署名付きcookieの作り方")
 
