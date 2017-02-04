@@ -177,7 +177,7 @@ cloudfront_signed_cookie contains scripts to use CloudFront's signed cookie.
 2. Copy CloudFront private key you got in the previous step as ./private_pk.pem
 3. Edit signature/policy.json to set domain name, expiration time, etc.
 4. Get base64 encoded policy and signature by running signature/get_policy.sh and signature/get_signature.sh
-5. Set generated policy and signature in addition to key pair ID you got in the first step to viewer's web browsers. The html in web_example demonstorates how you can do that.
+5. Set generated policy and signature in addition to CloudFront key pair ID you got in the first step to viewer's web browsers. The html in web_example demonstorates how you can do that.
 
 [I wrote an article for detail.](http://qiita.com/suhirotaka/items/514a9e246779dc1b9489 "AWS CloudFront 署名付きcookieの作り方")
 
