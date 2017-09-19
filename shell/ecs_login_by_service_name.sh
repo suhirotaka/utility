@@ -84,15 +84,15 @@ if [ ! -e $PRIVATE_KEY_FILE ]; then
   raise_error=1
 fi
 
-if [ -z "$(aws configure get aws_access_key_id)" ]; then
-  echo 'Error: aws access key id not found. try `env AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID`'
-  raise_error=1
-fi
+#if [ -z "$(aws configure get aws_access_key_id)" ]; then
+#  echo 'Error: aws access key id not found. try `env AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID`'
+#  raise_error=1
+#fi
 
-if [ -z "$(aws configure get aws_secret_access_key)" ]; then
-  echo 'Error: aws secret access key not found. try `env AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY`'
-  raise_error=1
-fi
+#if [ -z "$(aws configure get aws_secret_access_key)" ]; then
+#  echo 'Error: aws secret access key not found. try `env AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY`'
+#  raise_error=1
+#fi
 
 if [ -z "$(aws configure get region)" ]; then
   echo 'Error: aws region not found. try `env AWS_DEFAULT_REGION=YOUR_AWS_REGION`'
@@ -103,12 +103,12 @@ if [ $raise_error -eq 1 ]; then
   exit 1
 fi
 
-# get public IP from ECS service name
+# get host from ECS service name
 echo Start to process login ...
 
 task_definition_arn=$(aws ecs describe-services --output json --cluster $CLUSTER_NAME --service $ECS_SERVICE_NAME | jq '.services[].taskDefinition')
 if [ -z "$task_definition_arn" ]; then
-  echo 'Error: task definition not found. (wrong service name?)'
+  echo 'Error: task definition not found. (invalid credentials or wrong service name?)'
   exit 1
 fi
 task_definition=$(echo $task_definition_arn | sed -e 's/"[^"\/]*\/\([^"\/]*\)"/\1/')
@@ -141,8 +141,8 @@ if [ -z "$ec2_instance_id" ]; then
   exit 1
 fi
 
-public_ip=$(aws ec2 describe-instances --output json --instance-ids $ec2_instance_id | jq .Reservations[].Instances[].PublicIpAddress | sed -e 's/"//g')
-if [ -z "$public_ip" ]; then
+dns_name=$(aws ec2 describe-instances --output json --instance-ids $ec2_instance_id | jq .Reservations[].Instances[].PublicDnsName | sed -e 's/"//g')
+if [ -z "$dns_name" ]; then
   echo 'Error: desired EC2 instance not found.'
   exit 1
 fi
@@ -152,9 +152,9 @@ container_type=$(echo $task_definition | sed -e 's/.*-\([^\-\:]*\):[0-9]*/\1/')
 container_name="ecs-$(echo $task_definition | sed -e 's/:/-/')-${container_type}"
 docker_command="docker exec -it \$(docker ps --filter name=${container_name} -q | head -1) bash"
 if [ -n "${CONTAINER_LOGIN+a}" ] && [ $CONTAINER_LOGIN -eq 1 ]; then
-  echo SSH to container $container_name@$public_ip ...
-  ssh -t -i $PRIVATE_KEY_FILE ec2-user@$public_ip $docker_command
+  echo SSH to container $container_name@$dns_name ...
+  ssh -t -i $PRIVATE_KEY_FILE ec2-user@$dns_name $docker_command
 else
-  echo SSH to $public_ip ...
-  ssh -i $PRIVATE_KEY_FILE ec2-user@$public_ip
+  echo SSH to $dns_name ...
+  ssh -i $PRIVATE_KEY_FILE ec2-user@$dns_name
 fi
